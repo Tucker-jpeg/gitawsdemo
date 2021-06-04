@@ -42,6 +42,32 @@ resource "aws_subnet" "Public2" {
 }
 #3 Create an autoscaling group with Amazon Linux 2 instance (t3.nano) with a min of 2 instances and max of 3
 
+data "aws_subnet_ids" "subnets" {
+  vpc_id = aws_vpc.main.id
+}
+
+data "aws_subnet" "subnet_values" {
+  for_each = data.aws_subnet_ids.subnets.ids
+  id = each.value
+}
+
+resource "aws_launch_configuration" "launch_configuration" {
+  name = "demo_launch_configuration"
+  image_id = "ami-0d5eff06f840b45e9"
+  instance_type = "t3.nano"
+}
+
+resource "aws_autoscaling_group" "aws_asg_config" {
+  name = "demo_autoscaling_group"
+  min_size = 2
+  max_size = 3
+  health_check_type = "EC2"
+  launch_configuration = aws_launch_configuration.launch_configuration.name
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 #4 Create an S3 Bucket to store our terraform state file
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "tfstate"
