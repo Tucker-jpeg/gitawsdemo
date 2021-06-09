@@ -1,7 +1,7 @@
 # gitawsdemo
 Terraform, Gitlab and AWS
     
-Creation of a terraform module template that creates:
+Creation of a terraform module template that provisions:
 	
 
 		
